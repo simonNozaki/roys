@@ -36,6 +36,12 @@ $ rails webpacker:install
 ```
 
 ## Unit test
+Only model test
+```
+$ rails test:models
+```
+
+Only integration tests
 ```
 $ rails test:integration
 ```
