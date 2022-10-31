@@ -45,3 +45,9 @@ Only integration tests
 ```
 $ rails test:integration
 ```
+
+## Utilities
+Show all routings
+```
+$ rails routes
+```
