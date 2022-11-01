@@ -11,6 +11,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(get_validated_user_params)
     if @user.save
+      log_in(@user)
       # redirect_to user_url(@user) と等価
       flash[:success] = "Welcome to the Roys!"
       redirect_to @user

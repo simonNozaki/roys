@@ -19,4 +19,14 @@ class User < ApplicationRecord
   })
 
   has_secure_password
+
+  # 引数のハッシュ文字列を返す
+  # @param [String] str
+  def self.digest(str)
+    cost = ActiveModel::SecurePassword.min_cost ?
+      BCrypt::Engine::MIN_COST :
+      BCrypt::Engine.cost
+    
+    return BCrypt::Password.create(str, cost: cost)
+  end
 end
