@@ -8,4 +8,7 @@ environment.plugins.prepend('Provide',
   })
 )
 
+// 評価したら動いた
+console.log(environment)
+
 module.exports = environment

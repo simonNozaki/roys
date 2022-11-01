@@ -12,8 +12,8 @@
               Account <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
-              <!-- <%= link_to "Profile", user_path(current_user) %> と等価 -->
-              <li> <%= link_to "Profile", current_user %> </li>
+              <!-- link_to "Profile", user_path(current_user)  と等価 -->
+              <li> <%= link_to "Profile", get_current_user_or_nil %> </li>
               <li> <%= link_to "Settings", '#' %> </li>
               <li class="divider"></li>
               <li>
