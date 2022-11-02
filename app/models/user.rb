@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   REGEX_EMAIL_FORMAT = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+  attr_accessor :remember_token
 
   before_save(-> {
     # DBごとの大文字小文字区別状況を無視させるため
@@ -20,6 +21,25 @@ class User < ApplicationRecord
 
   has_secure_password
 
+  def remember
+    self.remember_token = User.get_new_token
+    update_attribute(:remember_digest, User.digest(remember_token))
+  end
+
+  # 引数のトークンがダイジェストと一致したらtrueを返す
+  # @param [String] remember_token
+  def authenticated?(remember_token)
+    if remember_digest.nil?
+      return false
+    end
+    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  end
+
+  # ユーザのログイン情報を破棄する
+  def forget
+    update_attribute(:remember_digest, nil)
+  end
+
   # 引数のハッシュ文字列を返す
   # @param [String] str
   def self.digest(str)
@@ -28,5 +48,9 @@ class User < ApplicationRecord
       BCrypt::Engine.cost
     
     return BCrypt::Password.create(str, cost: cost)
+  end
+
+  def self.get_new_token
+    SecureRandom.urlsafe_base64
   end
 end
