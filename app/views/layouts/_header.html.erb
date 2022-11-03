@@ -14,7 +14,7 @@
             <ul class="dropdown-menu">
               <!-- link_to "Profile", user_path(current_user)  と等価 -->
               <li> <%= link_to "Profile", get_current_user_or_nil %> </li>
-              <li> <%= link_to "Settings", '#' %> </li>
+              <li> <%= link_to "Settings", edit_user_path(get_current_user_or_nil) %> </li>
               <li class="divider"></li>
               <li>
                 <%= link_to "Log out", logout_path, method: :delete %>

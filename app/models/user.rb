@@ -16,9 +16,12 @@ class User < ApplicationRecord
     }
   )
   validates(:password, {
-    presence: true, length: { minimum: 6 }
+    presence: true,
+    length: { minimum: 6 },
+    allow_nil: true
   })
-
+  # User#createがコールされるときに呼ばれる
+  # ActiveModel::SecurePassword::ClassMethods / https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html#method-i-has_secure_password
   has_secure_password
 
   def remember
