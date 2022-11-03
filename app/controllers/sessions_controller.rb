@@ -3,12 +3,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(email: params[:session][:email].downcase)
+    @user = User.find_by(email: params[:session][:email].downcase)
     # nil-safe operator https://mitrev.net/ruby/2015/11/13/the-operator-in-ruby/
-    if user&.authenticate(params[:session][:password])
-      log_in(user)
-      params[:session][:remember_me] == REMEMBER_ME_CHECK_ON ? remember(user) : forget(user)
-      redirect_to(user)
+    if @user&.authenticate(params[:session][:password])
+      log_in(@user)
+      params[:session][:remember_me] == REMEMBER_ME_CHECK_ON ? remember(@user) : forget(@user)
+      redirect_to(@user)
     else
       # 次のリクエストが来るとnilになる
       flash.now[:danger] = 'Invalid email/password combination'
