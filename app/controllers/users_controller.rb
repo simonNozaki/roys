@@ -1,5 +1,9 @@
 class UsersController < ApplicationController
-  before_action(:logged_in_user, { only: [:edit, :update] })
+  # フィルタアクション、コントローラのメソッド呼び出し前に実行できる
+  before_action(:redirect_if_not_logged_in, { only: [:edit, :update] })
+  before_action(:redirect_if_not_authenticated, { only: [:edit, :update] })
+  # TODO: debugしなくなったら消す
+  attr_reader :user, :current_user
 
   def show
     @user = User.find(params[:id])
@@ -23,11 +27,10 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
+    # redirect_if_not_authenticatedで@userを初期化しているので何もしない
   end
 
   def update
-    @user = User.find(params[:id])
     if @user.update(get_validated_user_params)
       flash[:success] = "Profile updated"
       redirect_to(@user)
@@ -48,10 +51,19 @@ class UsersController < ApplicationController
         )
     end
 
-    def logged_in_user
+    def redirect_if_not_logged_in
       if not logged_in?
         flash[:danger] = "Please log in."
         redirect_to(login_url)
+      end
+    end
+
+    # 認証中のユーザでなければ強制リダイレクト
+    def redirect_if_not_authenticated
+      @user = User.find(params[:id])
+      current_user_or_nil = get_current_user_or_nil
+      if get_current_user_or_nil != @user
+        redirect_to(root_url)
       end
     end
 end
