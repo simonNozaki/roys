@@ -44,4 +44,37 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert(flash.empty?)
     assert_redirected_to(root_url)
   end
+
+  test "should redirect index when not logged in" do
+    get(users_path)
+    assert_redirected_to(login_url)
+  end
+
+  test "should not allow the admin attribute to edit via the web" do
+    log_in_as(@user_archer)
+    assert_not(@user_archer.admin?)
+    patch(user_path(@user_archer), { params: {
+      user: {
+        password: "password",
+        password_confirmation: "password",
+        admin: true
+      }
+    }})
+    assert_not(@user_archer.admin?)
+  end
+
+  test("should redirect on not logged in") do
+    assert_no_difference('User.count') do
+      delete(user_path(@user_michael))
+    end
+    assert_redirected_to(login_url)
+  end
+
+  test("should redirect destroy when logged in as non-admin user") do
+    log_in_as(@user_archer)
+    assert_no_difference('User.count') do
+      delete(user_path(@user_michael))
+    end
+    assert_redirected_to(root_url)
+  end
 end
