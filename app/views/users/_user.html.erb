@@ -1,0 +1,12 @@
+<% @users.each do |user| %>
+  <li>
+    <%= get_gravatar(user, size: 50) %>
+    <%= link_to user.name, user %>
+    <%
+      current_user = get_current_user_or_nil
+      if current_user.admin? and user != current_user
+    %>
+      | <%= link_to("delete", user, method: :delete, data: { confirm: "Are you sure?" }) %>
+    <% end %>
+  </li>
+<% end %>
