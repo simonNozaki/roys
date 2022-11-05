@@ -51,3 +51,10 @@ Show all routings
 ```
 $ rails routes
 ```
+
+Initialize seed data
+```
+$ rails db:migrate:reset
+
+$ rails db:seed
+```
