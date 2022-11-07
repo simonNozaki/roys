@@ -39,8 +39,22 @@ class User < ApplicationRecord
     BCrypt::Password.new(self.remember_digest).is_password?(remember_token)
   end
 
-  def activated?(activation_token)
+  # 引数のトークンがダイジェスト値と一致したらtrueを返す
+  # @param [String] activation_token
+  def is_activated?(activation_token)
+    if activation_digest.nil?
+      return false
+    end
+    BCrypt::Password.new(self.activation_digest).is_password?(activation_token)
+  end
 
+  # 有効化属性を更新する
+  def activate
+    update_columns(activated: true, activated_at: Time.zone.now)
+  end
+
+  def send_activation_email
+    UserMailer.activate_account(self).deliver_now
   end
 
   # ユーザのログイン情報を破棄する
