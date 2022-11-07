@@ -1,11 +1,12 @@
 class User < ApplicationRecord
   REGEX_EMAIL_FORMAT = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token
 
   before_save(-> {
     # DBごとの大文字小文字区別状況を無視させるため
     email.downcase!
   })
+  before_create(-> { create_activation_digest(self) })
 
   validates(:name, { presence: true, length: { maximum: 50 }})
   validates(:email, {
@@ -35,7 +36,11 @@ class User < ApplicationRecord
     if remember_digest.nil?
       return false
     end
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+    BCrypt::Password.new(self.remember_digest).is_password?(remember_token)
+  end
+
+  def activated?(activation_token)
+
   end
 
   # ユーザのログイン情報を破棄する
@@ -56,4 +61,14 @@ class User < ApplicationRecord
   def self.get_new_token
     SecureRandom.urlsafe_base64
   end
+
+  private
+    # ユーザの有効化ダイジェストを生成する
+    # @param [User] user
+    # @@return user
+    def create_activation_digest(user)
+      user.activation_token = User.get_new_token
+      user.activation_digest = User.digest(activation_token)
+      user
+    end
 end
