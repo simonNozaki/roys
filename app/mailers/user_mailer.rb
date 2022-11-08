@@ -14,10 +14,9 @@ class UserMailer < ApplicationMailer
   # with the following lookup:
   #
   #   en.user_mailer.reset_password.subject
-  #
-  def reset_password
-    @greeting = "Hi"
-
-    mail to: "to@example.org"
+  # @param [User] user
+  def reset_password(user)
+    @user = user
+    mail(to: user.email, subject: "Password reset")
   end
 end

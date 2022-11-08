@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   REGEX_EMAIL_FORMAT = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
-  attr_accessor :remember_token, :activation_token
+  attr_accessor :remember_token, :activation_token, :reset_token
 
   before_save(-> {
     # DBごとの大文字小文字区別状況を無視させるため
@@ -48,13 +48,40 @@ class User < ApplicationRecord
     BCrypt::Password.new(self.activation_digest).is_password?(activation_token)
   end
 
+  # リセットトークンがダイジェスト値と一致したらtrueを返す
+  def reset?(reset_token)
+    if reset_digest.nil?
+      return false
+    end
+    BCrypt::Password.new(self.reset_digest).is_password?(reset_token)
+  end
+
   # 有効化属性を更新する
   def activate
     update_columns(activated: true, activated_at: Time.zone.now)
   end
 
+  # アカウント有効確認メールを送信する
   def send_activation_email
     UserMailer.activate_account(self).deliver_now
+  end
+
+  def create_reset_digest
+    self.reset_token = User.get_new_token
+    update_columns(
+      reset_digest: User.digest(self.reset_token),
+      reset_sent_at: Time.zone.now
+    )
+  end
+
+  # パスワード再設定メールを送信する
+  def send_password_reset_email
+    UserMailer.reset_password(self).deliver_now
+  end
+
+  # パスワード再設定要求が有効期限切れならtrueを返す
+  def password_reset_expired?
+    self.reset_sent_at < 2.hours.ago
   end
 
   # ユーザのログイン情報を破棄する
