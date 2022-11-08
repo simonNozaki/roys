@@ -11,7 +11,8 @@ class UsersIndexTest < ActionDispatch::IntegrationTest
     get(users_path)
     assert_template('users/index')
     assert_select('div.pagination')
-    User.paginate(page: 1).each do |user|
+    users_in_1st_page = get_active_paginated_users 1
+    users_in_1st_page.each do |user|
       assert_select('a[href=?]', user_path(user), text: user.name)
     end
     assert_select('div.pagination', count: 2)
@@ -22,7 +23,7 @@ class UsersIndexTest < ActionDispatch::IntegrationTest
     get(users_path)
     assert_template('users/index')
     assert_select('div.pagination', count: 2)
-    users_in_1st_pages = User.paginate(page: 1)
+    users_in_1st_pages = get_active_paginated_users 1
     users_in_1st_pages.each do |user|
       assert_select('a[href=?]', user_path(user), text: user.name)
       unless user == @admin
@@ -50,4 +51,14 @@ class UsersIndexTest < ActionDispatch::IntegrationTest
     assert_empty(page_users.filter { |user| user.name == "Matthew Perry" })
     assert_not_empty(page_users.filter { |user| user.name == @admin.name })
   end
+
+  private
+    # 有効な、ページネーションされたユーザのリレーションを返す
+    # @param [Integer] page_size
+    # @return [ActiveRecord::Relation]
+    def get_active_paginated_users(page_size)
+      User
+        .paginate(page: page_size)
+        .filter { |user| user.activated == true }
+    end
 end
