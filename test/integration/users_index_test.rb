@@ -39,4 +39,15 @@ class UsersIndexTest < ActionDispatch::IntegrationTest
     get(users_path)
     assert_select('a', text: 'delete', count: 0)
   end
+
+  test "should have only activated users in index page" do
+    log_in_as(@admin)
+    get(users_path)
+    assert_template('users/index')
+    assert_select('div.pagination', count: 2)
+    # indexページのもとになるインスタンス変数の参照
+    page_users = assigns(:users)
+    assert_empty(page_users.filter { |user| user.name == "Matthew Perry" })
+    assert_not_empty(page_users.filter { |user| user.name == @admin.name })
+  end
 end
