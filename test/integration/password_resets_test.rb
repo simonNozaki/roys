@@ -71,12 +71,15 @@ class PasswordResetsTest < ActionDispatch::IntegrationTest
         password_confirmation: 'password'
       }
     }})
+    # ログインできたらリセットダイジェストがnilに
+    user.reload
+    assert_nil(user.reset_digest)
     assert(is_logged_in?)
     assert(flash.present?)
     assert_redirected_to(user)
   end
 
-  test "expired token" do
+  test "cannot reset password with expired token" do
     get(new_password_reset_path)
     post(password_resets_path, { params: {
       password_reset: {
@@ -84,6 +87,7 @@ class PasswordResetsTest < ActionDispatch::IntegrationTest
       }
     }})
     @user = assigns(:user)
+    # 期限を切らせる
     @user.update_attribute(:reset_sent_at, 3.hours.ago)
     patch(password_reset_path(@user.reset_token), { params: {
       email: @user.email,
