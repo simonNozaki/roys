@@ -1,0 +1,4 @@
+<%= link_to get_gravatar(get_current_user_or_nil, size: 50), get_current_user_or_nil %>
+<h1><%= get_current_user_or_nil.name %></h1>
+<span><%= link_to "view my profile", get_current_user_or_nil %></span>
+<span><%= pluralize(get_current_user_or_nil.microposts.count, "micropost") %></span>

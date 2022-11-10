@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many(:microposts, { dependent: :destroy })
   REGEX_EMAIL_FORMAT = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   attr_accessor :remember_token, :activation_token, :reset_token
 
@@ -25,9 +26,15 @@ class User < ApplicationRecord
   # ActiveModel::SecurePassword::ClassMethods / https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html#method-i-has_secure_password
   has_secure_password
 
+  # 記憶ダイジェストを更新する
   def remember
     self.remember_token = User.get_new_token
     update_attribute(:remember_digest, User.digest(remember_token))
+  end
+
+  def get_microposts
+    # SQLインジェクションを避けるために、whereメソッドでエスケープを入れる
+    Micropost.where('user_id = ?', id)
   end
 
   # 引数のトークンがダイジェストと一致したらtrueを返す
