@@ -9,6 +9,7 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
     log_in_as(@user)
     get(root_path)
     assert_select('div.pagination')
+    assert_select('input[type=file]')
     # 空のマイクロポスト、投稿できない
     assert_no_difference 'Micropost.count' do
       post(microposts_path, {
@@ -23,15 +24,19 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
     assert_select('a[href=?]', '/?page=2')
     # 登録できるマイクロポスト
     content = "This micropost really ties the room together"
+    image = fixture_file_upload('test/fixtures/kitten.jpg', 'image/jpg')
     assert_difference('Micropost.count', +1) do
       post(microposts_path, {
         params: {
           micropost: {
-            content: content
+            content: content,
+            image: image
           }
         }
       })
     end
+    micropost = assigns(:micropost)
+    assert(micropost.image.attached?)
     assert_redirected_to(root_url)
     follow_redirect!
     assert_match(content, response.body)

@@ -7,6 +7,8 @@ class MicropostsController < ApplicationController
       raise StandardError("User cannot post micropost if not logged on.")
     end
     @micropost = user.microposts.build(get_validated_microposts_params)
+    p params[:micropost][:image]
+    @micropost.image.attach(params[:micropost][:image])
     if @micropost.save
       flash[:success] = "Microposts created!"
       redirect_to(root_url)
@@ -26,7 +28,10 @@ class MicropostsController < ApplicationController
     def get_validated_microposts_params
       params
         .require(:micropost)
-        .permit(:content)
+        .permit(
+          :content,
+          :image
+        )
     end
 
     def redirect_if_not_authenticated
