@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
   # フィルタアクション、コントローラのメソッド呼び出し前に実行できる
-  before_action(:redirect_if_not_logged_in, { only: [:index, :edit, :update, :destroy] })
+  before_action(:redirect_if_not_logged_in, {
+    only: [:index, :edit, :update, :destroy, :following, :followers]
+  })
   before_action(:redirect_if_not_authenticated, { only: [:edit, :update] })
   before_action(:redirect_if_not_admin, { only: [:destroy] })
   # TODO: debugしなくなったら消す
@@ -51,6 +53,20 @@ class UsersController < ApplicationController
     user.destroy
     flash[:success] = "User #{params[:id]} - #{user.name} deleted."
     redirect_to(users_url)
+  end
+
+  def following
+    @title = "Following"
+    @user = User.find(params[:id])
+    @users = @user.following.paginate(page: params[:page])
+    render('show_follow')
+  end
+
+  def followers
+    @title = "Follower"
+    @user = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render('show_follow')
   end
 
   private

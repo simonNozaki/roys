@@ -35,3 +35,17 @@ users = User.order(:created_at).take(6)
   content = Faker::Lorem.sentence(word_count: 5)
   users.each { |user| user.microposts.create!(content: content) }
 end
+
+# フォロー・被フォローのリレーションを設定する
+users = User.all
+user = users.first
+followings = users[2..50]
+followers = users[3..40]
+followings.each do |following|
+  user.follow(following)
+  p "#{Time.zone.now} ユーザ #{following.name} をフォローしました"
+end
+followers.each do |follower|
+  follower.follow(user)
+  p "#{Time.zone.now} ユーザ #{following.name} にフォローされました"
+end
