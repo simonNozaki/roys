@@ -1,7 +1,15 @@
-@import 'bootstrap-sprockets';
-@import 'bootstrap';
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+/* mixins, variables, etc. */
 
 $gray-medium-light: #eaeaea;
+
+@mixin box_sizing {
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:         border-box;
+}
 
 /* universal */
 
@@ -51,6 +59,9 @@ p {
   line-height: 1.7em;
 }
 
+a {
+  background-color: transparent;
+}
 
 /* header */
 
@@ -95,13 +106,8 @@ footer {
   }
 }
 
-@mixin box_sizing {
-  -moz-box-sizing:    border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing:         border-box;
-}
-
 /* miscellaneous */
+
 .debug_dump {
   clear: both;
   float: left;
@@ -147,6 +153,44 @@ aside {
   margin-top: 15px;
 }
 
+.stats {
+  overflow: auto;
+  margin-top: 0;
+  padding: 0;
+  a {
+    float: left;
+    padding: 0 10px;
+    border-left: 1px solid $gray-lighter;
+    color: gray;
+    &:first-child {
+      padding-left: 0;
+      border: 0;
+    }
+    &:hover {
+      text-decoration: none;
+      color: blue;
+    }
+  }
+  strong {
+    display: block;
+  }
+}
+
+.user_avatars {
+  overflow: auto;
+  margin-top: 10px;
+  .gravatar {
+    margin: 1px 1px;
+  }
+  a {
+    padding: 0;
+  }
+}
+
+.users.follow {
+  padding: 0;
+}
+
 /* forms */
 
 input, textarea, select, .uneditable-input {
@@ -188,6 +232,8 @@ input {
   width: auto;
   margin-left: 0;
 }
+
+/* Users index */
 
 .users {
   list-style: none;
@@ -245,4 +291,3 @@ span.image {
     border: 0;
   }
 }
-
