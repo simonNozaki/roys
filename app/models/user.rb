@@ -52,7 +52,11 @@ class User < ApplicationRecord
 
   def get_feed_microposts
     # SQLインジェクションを避けるために、whereメソッドでエスケープを入れる
-    Micropost.where('user_id = ?', id)
+    # 先にIN句の中を評価するようにして、性能を改善する
+    following_user_ids = "
+    select followed_id from relationships where follower_id = :user_id
+    "
+    Micropost.where("user_id in (#{following_user_ids}) or user_id = :user_id", user_id: id)
   end
 
   # 引数のトークンがダイジェストと一致したらtrueを返す
