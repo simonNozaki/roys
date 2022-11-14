@@ -50,7 +50,7 @@ class User < ApplicationRecord
     update_attribute(:remember_digest, User.digest(remember_token))
   end
 
-  def get_microposts
+  def get_feed_microposts
     # SQLインジェクションを避けるために、whereメソッドでエスケープを入れる
     Micropost.where('user_id = ?', id)
   end

@@ -112,4 +112,23 @@ class UserTest < ActiveSupport::TestCase
     michael.unfollow(archer)
     assert_not(michael.following?(archer))
   end
+
+  test "should include mine and following user's microposts in feed" do
+    # MichaelはLanaをフォローしており、Archerをフォローしていない
+    michael = users(:michael)
+    lana = users(:lana)
+    archer = users(:archer)
+    # MichaelはフォローしているLanaの投稿を参照できる
+    lana.microposts.each do |post_following|
+      assert(michael.get_feed_microposts.include?(post_following))
+    end
+    # Michaelは自分の投稿を参照できる
+    michael.microposts.each do |post_following|
+      assert(michael.get_feed_microposts.include?(post_following))
+    end
+    # フォローしていないユーザの投稿はフィードに現れない
+    archer.microposts.each do |post_unfollowing|
+      assert_not michael.get_feed_microposts.include?(post_unfollowing)
+    end
+  end
 end

@@ -3,7 +3,7 @@ class StaticPagesController < ApplicationController
     current_user = get_current_user_or_nil
     unless current_user.nil?
       @micropost = current_user.microposts.build if logged_in?
-      @feed_items = current_user.get_microposts.paginate(page: params[:page])
+      @feed_items = current_user.get_feed_microposts.paginate(page: params[:page])
     end
   end
 
